@@ -12,6 +12,9 @@ from biflux.core import (
     ExecutionMode,
     ExecutionResult,
     PlanValidationError,
+    apply_udf,
+    biflux_udf,
+    biflux_udf_expr,
 )
 
 # Attempt to import Rust backend biflux_core
@@ -34,6 +37,9 @@ __all__ = [
     "BifluxPipelineError",
     "BifluxExecutionError",
     "PlanValidationError",
+    "biflux_udf",
+    "biflux_udf_expr",
+    "apply_udf",
     "biflux_core",
     "__version__",
 ]

@@ -15,6 +15,7 @@ from biflux.core.models import (
     ExecutionResult,
 )
 from biflux.core.pipeline import BifluxPipeline
+from biflux.core.udf import apply_udf, biflux_udf, biflux_udf_expr
 
 __all__ = [
     "BifluxContext",
@@ -28,4 +29,7 @@ __all__ = [
     "BifluxPipelineError",
     "BifluxExecutionError",
     "PlanValidationError",
+    "biflux_udf",
+    "biflux_udf_expr",
+    "apply_udf",
 ]

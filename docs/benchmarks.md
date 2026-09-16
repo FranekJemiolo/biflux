@@ -85,10 +85,56 @@ Direct memory evaluation between the Python API and `biflux-core` Rust engine vi
 
 ---
 
+## 4. All Domain Pipeline Examples Empirical Benchmark
+
+Evaluating all production domain pipelines across batch and live streaming modes (from `benchmarks/benchmark_all_examples.py`):
+
+| Pipeline Example | Domain Application | Batch Latency (50K) | Batch Throughput | Streaming P50 (1K) | Streaming Throughput | Max Train-Serve Skew |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Bond Pricing VWAP** | Fixed Income Analytics | **0.67 ms** | **74.7M rows/s** | **0.26 ms** | **3.9M rows/s** | **0.000000% (Exact Parity)** |
+| **Fraud Risk Scoring** | Payment Fraud Systems | **1.38 ms** | **36.1M rows/s** | **0.41 ms** | **2.4M rows/s** | **0.000000% (Exact Parity)** |
+| **L2 Orderbook Depth** | HFT Microstructure | **0.77 ms** | **64.6M rows/s** | **0.30 ms** | **3.3M rows/s** | **0.000000% (Exact Parity)** |
+| **IoT Predictive Health**| Industrial Turbines | **1.00 ms** | **49.8M rows/s** | **0.38 ms** | **2.7M rows/s** | **0.000000% (Exact Parity)** |
+| **Option Risk (Rust UDF)**| Options Pricing & Greeks | **71.54 ms** | **698.9K rows/s** | **1.71 ms** | **585.2K rows/s** | **0.000000% (Exact Parity)** |
+
+---
+
+## 5. Custom Python UDF Acceleration Engine
+
+Evaluating custom Python mathematical functions executed via Rust/PyO3 bindings (from `benchmarks/benchmark_udf.py`):
+
+### Batch Mode UDF Scaling
+| Dataset Scale | Execution Time (ms) | Processing Throughput |
+| :--- | :--- | :--- |
+| **10,000 records** | **5.29 ms** | **1,890,166 rows/s** |
+| **100,000 records** | **49.58 ms** | **2,016,836 rows/s** |
+| **500,000 records** | **251.33 ms** | **1,989,432 rows/s** |
+
+### Streaming Micro-Batch UDF Latency
+| Micro-Batch Size | P50 Latency (ms) | Streaming Throughput |
+| :--- | :--- | :--- |
+| **500 records** | **0.54 ms** | **934,071 rows/s** |
+| **2,000 records** | **1.49 ms** | **1,342,057 rows/s** |
+| **10,000 records** | **5.43 ms** | **1,842,610 rows/s** |
+
+- **Direct PyO3 Rust UDF Vector Latency**: **46.84 ms** for 100,000 records (**2,134,967 rows/s**).
+
+---
+
 ## Reproducing Benchmarks
 
-Run the benchmark suite locally:
+Run the benchmark suites locally:
 
 ```bash
+# Internal throughput and Arrow IPC
 python benchmarks/benchmark_throughput.py
+
+# Multi-scale cross-framework comparison (Biflux vs Polars, DuckDB, Pandas)
+python benchmarks/comparative_benchmark.py
+
+# All domain pipeline examples
+python benchmarks/benchmark_all_examples.py
+
+# Custom Python UDF acceleration engine
+python benchmarks/benchmark_udf.py
 ```

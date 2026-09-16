@@ -143,6 +143,20 @@ class VWAPModel(BifluxPipeline):
     print(f"Streaming initialized: {result.duration_ms}ms, status={result.status}")
     ```
 
+=== "Custom Python/Rust UDFs"
+    ```python
+    # 3. Accelerated User-Defined Functions with Rust Bindings
+    from biflux import biflux_udf
+
+    @biflux_udf
+    def non_linear_risk(bid: float, ask: float) -> float:
+        mid = (bid + ask) / 2.0
+        return round(((ask - bid) / mid) * 10000.0, 4)
+
+    # Use seamlessly inside pipeline.transform(df) across batch & live modes:
+    # df.with_columns(risk=non_linear_risk(pl.col("bid"), pl.col("ask")))
+    ```
+
 ---
 
 ## ⚡ Performance & Benchmarks
@@ -181,7 +195,19 @@ Biflux is engineered for sub-millisecond streaming and multi-million row/sec bat
 | **10,000 rows** | **0.28 ms** | **0.29 ms** | 0.34 ms | 0.55 ms | 1.22 ms |
 | **100,000 rows**| **0.88 ms** | **0.83 ms** | 0.79 ms | 1.30 ms | 2.36 ms |
 
-*Run benchmarks with `python benchmarks/comparative_benchmark.py`. Read the in-depth [Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/).*
+### 🏆 Empirical Benchmark Across All Domain Pipeline Examples
+
+Evaluated using `python benchmarks/benchmark_all_examples.py` across 50,000 batch rows and 1,000 streaming rows:
+
+| Pipeline Example | Target Domain | Batch Throughput | Streaming Latency (P50) | Streaming Throughput | Max Train-Serve Skew |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **Bond Pricing VWAP** | Fixed Income Analytics | **74.7M rows/s** (0.67 ms) | **0.26 ms** | **3.9M rows/s** | **0.000000% (Exact Parity)** |
+| **Fraud Risk Scoring** | Payment Fraud Defense | **36.1M rows/s** (1.38 ms) | **0.41 ms** | **2.4M rows/s** | **0.000000% (Exact Parity)** |
+| **L2 Orderbook Depth** | HFT Microstructure | **64.6M rows/s** (0.77 ms) | **0.30 ms** | **3.3M rows/s** | **0.000000% (Exact Parity)** |
+| **IoT Predictive Health**| Industrial Turbines | **49.8M rows/s** (1.00 ms) | **0.38 ms** | **2.7M rows/s** | **0.000000% (Exact Parity)** |
+| **Option Risk (Rust UDF)**| Options Pricing & Greeks | **698.9K rows/s** (71.5 ms)| **1.71 ms** | **585.2K rows/s** | **0.000000% (Exact Parity)** |
+
+*Explore full empirical details in the [Performance & Latency Benchmarks](https://franekjemiolo.github.io/biflux/benchmarks/) and [Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/) docs.*
 
 ---
 
@@ -195,6 +221,7 @@ The [`examples/`](examples/) directory contains production-ready pipelines provi
 | **Payment Fraud Detection** | [`fraud_detection_pipeline.py`](examples/fraud_detection_pipeline.py) | Cardholder velocity, spending z-scores, and real-time fraud alert triggers. |
 | **L2 Orderbook Depth** | [`orderbook_depth_pipeline.py`](examples/orderbook_depth_pipeline.py) | High-frequency orderbook imbalance ratio, micro-price, and spread in bps. |
 | **IoT Predictive Maintenance**| [`iot_sensor_telemetry_pipeline.py`](examples/iot_sensor_telemetry_pipeline.py) | Vibration energy RMS, thermal stress gradients, and turbine health indices. |
+| **Custom Python/Rust UDF**| [`custom_udf_pipeline.py`](examples/custom_udf_pipeline.py) | Black-Scholes delta and non-linear risk UDFs evaluated via Rust bindings. |
 | **Airflow Orchestration** | [`airflow_dag.py`](examples/airflow_dag.py) | Scheduled batch feature extraction in production Apache Airflow DAGs. |
 
 ---
@@ -212,7 +239,9 @@ Biflux includes built-in safety mechanisms:
 
 Comprehensive guides, tutorials, and architectural deep-dives are available on our [Documentation Site](https://franekjemiolo.github.io/biflux/):
 - [Architecture & Zero-Copy Memory Model](https://franekjemiolo.github.io/biflux/architecture/)
+- [Custom Python UDFs with Rust Acceleration](https://franekjemiolo.github.io/biflux/udf/)
 - [Performance & Latency Benchmarks](https://franekjemiolo.github.io/biflux/benchmarks/)
+- [Cross-Framework Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/)
 - [E2E Bond Pricing VWAP Tutorial](https://franekjemiolo.github.io/biflux/tutorials/)
 - [Apache Airflow Orchestration Guide](https://franekjemiolo.github.io/biflux/tutorials/#airflow)
 

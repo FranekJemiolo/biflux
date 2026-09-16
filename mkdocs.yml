@@ -50,5 +50,6 @@ nav:
   - Architecture: architecture.md
   - Getting Started: getting_started.md
   - Tutorials & Models: tutorials.md
+  - Custom Python UDFs: udf.md
   - Benchmarks: benchmarks.md
   - Comparative Analysis: comparative_analysis.md

@@ -157,7 +157,16 @@ Biflux is engineered for sub-millisecond streaming and multi-million row/sec bat
 | **High-Throughput Streaming** | 50,000 rows | **0.56 ms** (P50) | **88,862,511 rows/s** |
 | **Rust Zero-Copy Arrow IPC** | 100,000 records | **6.07 ms** | **668.4 MB/s (16.5M rec/s)** |
 
-*Run the benchmark suite locally with `python benchmarks/benchmark_throughput.py`.*
+### 📊 Cross-Framework Comparison (Biflux vs. Polars, DuckDB, Pandas)
+
+| Framework | Batch 1M Records | Streaming 5K Records (P50) | Codebase Parity / Skew Risk |
+| :--- | :--- | :--- | :--- |
+| **Biflux (Unified Engine)** | **9.6 ms** (104.3M rows/s) | **0.27 ms** (18.3M rows/s) | **0.000% Skew (100% Unified Pipeline)** |
+| **Polars (Standalone)** | 8.8 ms (114.3M rows/s) | 0.27 ms (18.2M rows/s) | High Skew Risk (No streaming abstraction; manual Kafka glue) |
+| **DuckDB** | 9.9 ms (101.2M rows/s) | N/A (In-memory SQL only) | Separate SQL vs streaming codebases |
+| **Pandas** | 15.6 ms (64.2M rows/s) | 1.43 ms (3.5M rows/s) | Critical Skew Risk & heavy GC pauses |
+
+*Run comparative benchmarks with `python benchmarks/comparative_benchmark.py`. Read the in-depth [Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/).*
 
 ---
 

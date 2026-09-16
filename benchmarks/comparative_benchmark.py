@@ -59,7 +59,7 @@ def benchmark_batch_frameworks(n_rows: int = 1_000_000) -> Dict[str, Dict[str, A
 
     results: Dict[str, Dict[str, Any]] = {}
 
-    # 1. Biflux Batch
+    # 1. Biflux Batch (Unified Framework)
     ctx = BifluxContext(mode=ExecutionMode.BATCH)
     biflux_pipe = BifluxVWAPPipeline(ctx)
     # Warmup
@@ -74,10 +74,41 @@ def benchmark_batch_frameworks(n_rows: int = 1_000_000) -> Dict[str, Dict[str, A
         "time_ms": avg_biflux * 1000,
         "throughput": n_rows / avg_biflux,
         "unified_api": True,
-        "skew_risk": "0.0% (Zero Skew)",
+        "skew_risk": "0.0% (Zero Skew - Unified Dual Engine)",
     }
 
-    # 2. DuckDB SQL
+    # 2. Standalone Polars (Direct in-memory LazyFrame)
+    def run_standalone_polars(df: pl.LazyFrame) -> pl.DataFrame:
+        return (
+            df.with_columns(
+                mid=(pl.col("bid") + pl.col("ask")) / 2.0,
+                dollar_vol=((pl.col("bid") + pl.col("ask")) / 2.0) * pl.col("size"),
+            )
+            .group_by("symbol")
+            .agg(
+                total_volume=pl.col("size").sum(),
+                total_dollar_volume=pl.col("dollar_vol").sum(),
+                vwap=(pl.col("dollar_vol").sum() / pl.col("size").sum()).round(6),
+            )
+            .sort("symbol")
+            .collect()
+        )
+
+    _ = run_standalone_polars(pl_df.lazy())
+    durations = []
+    for _ in range(5):
+        t0 = time.perf_counter()
+        _ = run_standalone_polars(pl_df.lazy())
+        durations.append(time.perf_counter() - t0)
+    avg_polars = sum(durations) / len(durations)
+    results["Polars (Standalone)"] = {
+        "time_ms": avg_polars * 1000,
+        "throughput": n_rows / avg_polars,
+        "unified_api": False,
+        "skew_risk": "Medium (No streaming abstraction; glue code needed)",
+    }
+
+    # 3. DuckDB SQL
     duck_sql = """
         SELECT
             symbol,
@@ -102,7 +133,7 @@ def benchmark_batch_frameworks(n_rows: int = 1_000_000) -> Dict[str, Dict[str, A
         "skew_risk": "High (Separate SQL vs Stream code)",
     }
 
-    # 3. Pandas Baseline
+    # 4. Pandas Baseline
     def run_pandas(df: pd.DataFrame) -> pd.DataFrame:
         mid = (df["bid"] + df["ask"]) / 2.0
         dollar_vol = mid * df["size"]
@@ -140,7 +171,7 @@ def benchmark_streaming_frameworks(micro_batch_size: int = 5_000) -> Dict[str, D
 
     results: Dict[str, Dict[str, Any]] = {}
 
-    # 1. Biflux (identical class)
+    # 1. Biflux (Streaming Engine via Arrow IPC)
     ctx = BifluxContext(mode=ExecutionMode.LIVE)
     biflux_pipe = BifluxVWAPPipeline(ctx)
     _ = biflux_pipe.process_micro_batch(pl_batch)
@@ -157,7 +188,39 @@ def benchmark_streaming_frameworks(micro_batch_size: int = 5_000) -> Dict[str, D
         "unified_codebase": "100% Identical Python Class",
     }
 
-    # 2. Native Python Streaming Loop (Standard Kafka Consumer logic)
+    # 2. Standalone Polars (Manual micro-batching)
+    def polars_micro_batch(batch: pl.DataFrame) -> pl.DataFrame:
+        return (
+            batch.lazy()
+            .with_columns(
+                mid_price=(pl.col("bid") + pl.col("ask")) / 2.0,
+                dollar_volume=((pl.col("bid") + pl.col("ask")) / 2.0) * pl.col("size"),
+            )
+            .group_by("symbol")
+            .agg(
+                total_volume=pl.col("size").sum(),
+                total_dollar_volume=pl.col("dollar_volume").sum(),
+                vwap=(pl.col("dollar_volume").sum() / pl.col("size").sum()).round(6),
+            )
+            .sort("symbol")
+            .collect()
+        )
+
+    _ = polars_micro_batch(pl_batch)
+    latencies = []
+    for _ in range(25):
+        t0 = time.perf_counter()
+        _ = polars_micro_batch(pl_batch)
+        latencies.append((time.perf_counter() - t0) * 1000)
+    latencies.sort()
+    p50_polars = latencies[len(latencies) // 2]
+    results["Polars (Micro-Batching)"] = {
+        "latency_ms": p50_polars,
+        "throughput": micro_batch_size / (p50_polars / 1000.0),
+        "unified_codebase": "No (Custom Kafka glue required)",
+    }
+
+    # 3. Native Python Streaming Loop (Standard Kafka Consumer logic)
     def native_python_consumer(records: List[Dict[str, Any]]) -> Dict[str, Any]:
         state: Dict[str, Dict[str, float]] = {}
         for r in records:

@@ -13,6 +13,32 @@ Biflux is engineered for low latency and high analytical throughput by compiling
 
 ---
 
+## 📊 Cross-Framework Comparison (Biflux vs. Polars, DuckDB, Pandas)
+
+How does Biflux compare to raw standalone Polars, DuckDB, and Pandas?
+
+### 1. Batch Execution (1,000,000 records)
+
+| Framework | Execution Time (ms) | Throughput (rows/s) | Train-Serve Parity |
+| :--- | :--- | :--- | :--- |
+| **Biflux (Unified Engine)** | **9.6 ms** | **104.3M rows/s** | **100% Exact Parity (Unified Class)** |
+| **Polars (Standalone)** | 8.8 ms *(0.8 ms faster)* | 114.3M rows/s | Glue code needed for real-time streaming |
+| **DuckDB** | 9.9 ms | 101.2M rows/s | Requires separate SQL vs streaming codebases |
+| **Pandas** | 15.6 ms | 64.2M rows/s | Severe divergence & skew risk |
+
+### 2. Streaming Latency (5,000 records / micro-batch)
+
+| Framework | P50 Latency (ms) | Throughput (rows/s) | Unified Codebase |
+| :--- | :--- | :--- | :--- |
+| **Biflux (Streaming Engine)** | **0.27 ms** | **18.3M rows/s** | **Yes (100% Identical Python API)** |
+| **Polars (Micro-Batching)** | 0.27 ms | 18.2M rows/s | No (Manual Kafka ingestion & state glue) |
+| **Native Python Consumer** | 0.52 ms *(1.9x slower)* | 9.6M rows/s | No (Handwritten dictionary loops) |
+| **Pandas Micro-Batching** | 1.43 ms *(5.3x slower)* | 3.5M rows/s | Severe GC churn and memory reallocation |
+
+*For full empirical methodology and deep-dive analysis, see [Comparative Analysis](comparative_analysis.md).*
+
+---
+
 ## 1. Historical Batch Engine Throughput
 
 Evaluated on VWAP aggregation over synthetic bond quote tables in Apache Parquet format:

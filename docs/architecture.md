@@ -67,11 +67,17 @@ graph TD
         end
     end
 
-    style UserClass fill:#1e40af,stroke:#3b82f6,color:#fff
-    style LogicalPlan fill:#047857,stroke:#10b981,color:#fff
-    style RustBridge fill:#b45309,stroke:#f59e0b,color:#fff
-    style BatchExec fill:#4338ca,stroke:#6366f1,color:#fff
-    style StreamExec fill:#4338ca,stroke:#6366f1,color:#fff
+    classDef highlight fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af;
+    classDef success fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534;
+    classDef rust fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#9a3412;
+    classDef arrow fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46;
+    classDef neutral fill:#f8fafc,stroke:#64748b,stroke-width:1.5px,color:#1e293b;
+
+    class UserClass,TransformFn,CtxInject,Guardrails highlight;
+    class LogicalPlan,PlanSer success;
+    class RustBridge,BatchFFI,StreamFFI,IpcFFI rust;
+    class BatchExec,StreamExec,ArrowBuffer arrow;
+    class IcebergCatalog,PartitionPruner,ParquetScanner,S3Sink,KafkaConsumer,KafkaProducer neutral;
 ```
 
 ---

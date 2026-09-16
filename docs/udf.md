@@ -19,6 +19,27 @@ While Polars offers a rich expression engine, quantitative finance and productio
 
 ---
 
+## ⚡ Zero-Copy Execution Architecture
+
+```mermaid
+flowchart LR
+    Py["Python Pipeline<br/><b>@biflux_udf</b>"] -->|Pass Arrow Stream / Table| IPC["In-Memory Arrow IPC Buffer<br/><i>(C-Data Interface / Shared Memory)</i>"]
+    IPC -->|Zero-Copy Pointer Handoff| Rust["Rust PyO3 Engine<br/><b>biflux-core::udf</b>"]
+    Rust -->|SIMD Vectorized Math| SIMD["Native CPU Vector Math<br/><i>(Zero Object Allocation)</i>"]
+    SIMD -->|Write Results| Out["Output Arrow RecordBatch"]
+    Out -->|Zero-Copy Return| Result["Python LazyFrame / Stream Result"]
+
+    classDef py fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af;
+    classDef rust fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#9a3412;
+    classDef arrow fill:#ecfdf5,stroke:#059669,stroke-width:2px,color:#065f46;
+
+    class Py,Result py;
+    class Rust,SIMD rust;
+    class IPC,Out arrow;
+```
+
+---
+
 ## 🛠️ API & Usage Guide
 
 ### 1. Declaring a Custom UDF with `@biflux_udf`

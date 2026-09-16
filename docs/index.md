@@ -1,15 +1,15 @@
 # Project Biflux
 
-<div align="center">
+<p align="center" style="font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0 1rem 0; color: var(--md-primary-fg-color);">
+  Unified Data Engineering Framework Eliminating Train-Serve Skew
+</p>
 
-<h3>Unified Data Engineering Framework Eliminating Train-Serve Skew</h3>
-
-[![CI](https://github.com/FranekJemiolo/biflux/actions/workflows/ci.yml/badge.svg)](https://github.com/FranekJemiolo/biflux/actions/workflows/ci.yml)
-[![Docs](https://github.com/FranekJemiolo/biflux/actions/workflows/docs.yml/badge.svg)](https://franekjemiolo.github.io/biflux/)
-[![License: Apache-2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://github.com/FranekJemiolo/biflux/blob/main/LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Rust 1.75+](https://img.shields.io/badge/rust-1.75+-orange.svg)](https://www.rust-lang.org/)
-
+<div class="hero-badges" align="center">
+  <a href="https://github.com/FranekJemiolo/biflux/actions/workflows/ci.yml"><img src="https://github.com/FranekJemiolo/biflux/actions/workflows/ci.yml/badge.svg" alt="CI Status" /></a>
+  <a href="https://franekjemiolo.github.io/biflux/"><img src="https://github.com/FranekJemiolo/biflux/actions/workflows/docs.yml/badge.svg" alt="Docs Status" /></a>
+  <a href="https://github.com/FranekJemiolo/biflux/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-blue.svg" alt="License: Apache-2.0" /></a>
+  <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python 3.10+" /></a>
+  <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.75+-orange.svg" alt="Rust 1.75+" /></a>
 </div>
 
 ---
@@ -20,26 +20,35 @@ In quantitative finance, machine learning engineering, and high-frequency analyt
 
 ```mermaid
 flowchart TD
-    subgraph Traditional Fractured Stack
-        D1["Data Scientists"] -->|Python, Polars, DuckDB, Spark| Offline["Offline Lakehouse Backtest (S3 / Iceberg)"]
-        D2["Systems Engineers"] -->|Rewrite in C++, Java, Flink| Online["Online Real-Time Serving (Kafka / Redpanda)"]
-        Offline -.->|Subtle Mathematical Drift| Divergence["💥 Catastrophic Train-Serve Skew"]
-        Online -.->|Window & Rounding Discrepancies| Divergence
+    subgraph Fragile ["⚠️ Traditional Fractured Architecture (Skew Inevitable)"]
+        direction TB
+        DS["👨‍🔬 Data Scientists<br/><i>(Python, Polars, DuckDB)</i>"] -->|Author Offline Logic| BatchSys["Lakehouse Backtest Engine<br/><i>(S3 / Apache Iceberg)</i>"]
+        Eng["⚙️ Systems Engineers<br/><i>(C++, Java, Rust, Flink)</i>"] -->|Manual Real-Time Rewrite| StreamSys["Online Serving Pipeline<br/><i>(Kafka / Redpanda)</i>"]
+        BatchSys -.->|Subtle Mathematical Drift| Drift["💥 Catastrophic Train-Serve Skew<br/><i>(Silent Production Model Degradation)</i>"]
+        StreamSys -.->|Window & Rounding Discrepancies| Drift
     end
 
-    subgraph The Biflux Paradigm
-        Eng["Data Scientists & Systems Engineers"] -->|Single Python Class| BifluxCode["BifluxPipeline.transform(df: pl.LazyFrame)"]
-        BifluxCode --> Compiled["Single Rust / Apache Arrow Execution Plan"]
-        Compiled -->|mode='batch'| Lakehouse["S3 / Apache Iceberg Lakehouse"]
-        Compiled -->|mode='live'| Kafka["Real-Time Kafka Topic Stream"]
-        Lakehouse === Parity["✅ 0.000000% Skew: Exact Decimal Parity"]
-        Kafka === Parity
+    subgraph Biflux ["🚀 The Biflux Paradigm (Guaranteed Parity)"]
+        direction TB
+        Team["👥 Data Scientists & Systems Engineers"] -->|Single Python API| Pipeline["BifluxPipeline.transform(df: pl.LazyFrame)"]
+        Pipeline --> Compiler["Unified Apache Arrow Execution Plan<br/><i>(Compiled & Executed by Rust Core)</i>"]
+        Compiler -->|mode='batch'| BatchEngine["S3 / Iceberg Lakehouse Engine"]
+        Compiler -->|mode='live'| StreamEngine["Real-Time Kafka Event Streaming"]
+        BatchEngine === Parity["🎯 0.000000% Skew: Exact Bit-for-Bit Parity"]
+        StreamEngine === Parity
     end
 
-    style Divergence fill:#dc2626,stroke:#991b1b,color:#fff
-    style Parity fill:#16a34a,stroke:#15803d,color:#fff
-    style BifluxCode fill:#2563eb,stroke:#1d4ed8,color:#fff
-    style Compiled fill:#d97706,stroke:#b45309,color:#fff
+    classDef danger fill:#fee2e2,stroke:#dc2626,stroke-width:2px,color:#991b1b;
+    classDef success fill:#dcfce7,stroke:#16a34a,stroke-width:2px,color:#166534;
+    classDef highlight fill:#dbeafe,stroke:#2563eb,stroke-width:2px,color:#1e40af;
+    classDef rust fill:#ffedd5,stroke:#ea580c,stroke-width:2px,color:#9a3412;
+    classDef neutral fill:#f8fafc,stroke:#64748b,stroke-width:1.5px,color:#1e293b;
+
+    class Drift danger;
+    class Parity success;
+    class Pipeline,Team highlight;
+    class Compiler rust;
+    class DS,Eng,BatchSys,StreamSys,BatchEngine,StreamEngine neutral;
 ```
 
 ### The Problem: Why Traditional Systems Drift

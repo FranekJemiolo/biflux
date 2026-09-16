@@ -24,24 +24,49 @@ Historically, organizations were forced into a false dichotomy:
 ## 💡 The 4 Pillars of Biflux
 
 ```mermaid
-mindmap
-  root((Biflux Pillars))
-    1. Single Expression Graph
-      Polars LazyFrame API
-      Zero Code Duplication
-      Bit-for-Bit Determinism
-    2. Zero-Copy Rust/Arrow Core
-      Native Apache Arrow IPC
-      O(1) Memory Handoffs
-      Sub-Millisecond Micro-Batches
-    3. Hybrid Lakehouse & Event Stream
-      Apache Iceberg / Parquet
-      Apache Kafka / Redpanda
-      Identical Plan Dispatch
-    4. Enterprise Safety & Guardrails
-      Environment.LOCAL vs CLOUD
-      Pre-execution Credential Gate
-      Airflow & Prefect Ready
+flowchart TD
+    Root["🎯 Core Pillars of Biflux"]
+
+    subgraph P1 ["1. Single Expression Graph"]
+        P1A["Polars LazyFrame API"]
+        P1B["Zero Code Duplication"]
+        P1C["Bit-for-Bit Determinism"]
+    end
+
+    subgraph P2 ["2. Zero-Copy Rust Core"]
+        P2A["Native Apache Arrow IPC"]
+        P2B["O(1) Memory Handoffs"]
+        P2C["Sub-Millisecond Micro-Batches"]
+    end
+
+    subgraph P3 ["3. Lakehouse & Stream Hybrid"]
+        P3A["Apache Iceberg & Parquet"]
+        P3B["Apache Kafka & Redpanda"]
+        P3C["Identical Plan Dispatch"]
+    end
+
+    subgraph P4 ["4. Enterprise Guardrails"]
+        P4A["Environment.LOCAL vs CLOUD"]
+        P4B["Pre-Execution Credential Gate"]
+        P4C["Airflow & Prefect Ready"]
+    end
+
+    Root --> P1
+    Root --> P2
+    Root --> P3
+    Root --> P4
+
+    classDef root fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81;
+    classDef p1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e40af;
+    classDef p2 fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412;
+    classDef p3 fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#166534;
+    classDef p4 fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8;
+
+    class Root root;
+    class P1A,P1B,P1C p1;
+    class P2A,P2B,P2C p2;
+    class P3A,P3B,P3C p3;
+    class P4A,P4B,P4C p4;
 ```
 
 ### Pillar 1: Single Expression Graph

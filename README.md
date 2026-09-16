@@ -145,6 +145,36 @@ class VWAPModel(BifluxPipeline):
 
 ---
 
+## ⚡ Performance & Benchmarks
+
+Biflux is engineered for sub-millisecond streaming and multi-million row/sec batch throughput:
+
+| Benchmark | Scale / Batch Size | Latency / Execution Time | Throughput |
+| :--- | :--- | :--- | :--- |
+| **Historical Batch Engine** | 1,000,000 rows | **242 ms** | **4,129,685 rows/s** |
+| **Live Streaming Micro-Batch** | 100 rows | **0.24 ms** (P50) | **408,510 rows/s** |
+| **Live Streaming Micro-Batch** | 1,000 rows | **0.25 ms** (P50) | **4,022,801 rows/s** |
+| **High-Throughput Streaming** | 50,000 rows | **0.56 ms** (P50) | **88,862,511 rows/s** |
+| **Rust Zero-Copy Arrow IPC** | 100,000 records | **6.07 ms** | **668.4 MB/s (16.5M rec/s)** |
+
+*Run the benchmark suite locally with `python benchmarks/benchmark_throughput.py`.*
+
+---
+
+## 📁 Real-World Domain Examples
+
+The [`examples/`](examples/) directory contains production-ready pipelines proving exact Train-Serve parity:
+
+| Example Pipeline | Source File | Description |
+| :--- | :--- | :--- |
+| **Bond Pricing VWAP** | [`bond_pricing_pipeline.py`](examples/bond_pricing_pipeline.py) | Corporate bond VWAP backtest vs. Kafka live stream with zero-skew proof. |
+| **Payment Fraud Detection** | [`fraud_detection_pipeline.py`](examples/fraud_detection_pipeline.py) | Cardholder velocity, spending z-scores, and real-time fraud alert triggers. |
+| **L2 Orderbook Depth** | [`orderbook_depth_pipeline.py`](examples/orderbook_depth_pipeline.py) | High-frequency orderbook imbalance ratio, micro-price, and spread in bps. |
+| **IoT Predictive Maintenance**| [`iot_sensor_telemetry_pipeline.py`](examples/iot_sensor_telemetry_pipeline.py) | Vibration energy RMS, thermal stress gradients, and turbine health indices. |
+| **Airflow Orchestration** | [`airflow_dag.py`](examples/airflow_dag.py) | Scheduled batch feature extraction in production Apache Airflow DAGs. |
+
+---
+
 ## 🛡️ Enterprise Guardrails
 
 Biflux includes built-in safety mechanisms:
@@ -158,6 +188,7 @@ Biflux includes built-in safety mechanisms:
 
 Comprehensive guides, tutorials, and architectural deep-dives are available on our [Documentation Site](https://franekjemiolo.github.io/biflux/):
 - [Architecture & Zero-Copy Memory Model](https://franekjemiolo.github.io/biflux/architecture/)
+- [Performance & Latency Benchmarks](https://franekjemiolo.github.io/biflux/benchmarks/)
 - [E2E Bond Pricing VWAP Tutorial](https://franekjemiolo.github.io/biflux/tutorials/)
 - [Apache Airflow Orchestration Guide](https://franekjemiolo.github.io/biflux/tutorials/#airflow)
 

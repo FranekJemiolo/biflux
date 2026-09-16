@@ -1,0 +1,27 @@
+# Environments & Packages
+.venv/
+env/
+venv/
+dist/
+wheels/
+*.egg-info/
+
+# Rust build artifacts
+target/
+biflux-core/target/
+
+# Python caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.coverage
+coverage.xml
+
+# Docs build
+site/
+
+# IDE & OS
+.DS_Store
+.idea/
+.vscode/

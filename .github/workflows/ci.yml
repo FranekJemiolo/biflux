@@ -55,8 +55,8 @@ jobs:
         run: |
           uv venv
           uv pip install maturin ruff mypy pytest pytest-cov
-          maturin develop --manifest-path biflux-core/Cargo.toml --uv
-          uv pip install -e ".[dev]"
+          uv run maturin develop --manifest-path biflux-core/Cargo.toml
+          uv run pip install -e ".[dev]"
 
       - name: Ruff Format Check
         run: uv run ruff format --check biflux tests integration_tests examples benchmarks
@@ -76,7 +76,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-13, macos-latest]
+        os: [ubuntu-latest, macos-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -85,13 +85,13 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Build Wheels with maturin-action
-        uses: PyO3/maturin-action@v1
-        with:
-          target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path biflux-core/Cargo.toml
-          sccache: 'true'
-          manylinux: auto
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Build Wheels
+        run: |
+          pip install --upgrade pip maturin
+          maturin build --release --out dist --manifest-path biflux-core/Cargo.toml
 
       - name: Upload Wheels
         uses: actions/upload-artifact@v4

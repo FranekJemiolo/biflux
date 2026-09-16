@@ -217,12 +217,30 @@ The [`examples/`](examples/) directory contains production-ready pipelines provi
 
 | Example Pipeline | Source File | Description |
 | :--- | :--- | :--- |
+| **Kafka & S3 Bridge** | [`kafka_s3_bridge_pipeline.py`](examples/kafka_s3_bridge_pipeline.py) | Dual-sink ingestion from Kafka to real-time topic & S3 Parquet with zero-skew replay. |
 | **Bond Pricing VWAP** | [`bond_pricing_pipeline.py`](examples/bond_pricing_pipeline.py) | Corporate bond VWAP backtest vs. Kafka live stream with zero-skew proof. |
 | **Payment Fraud Detection** | [`fraud_detection_pipeline.py`](examples/fraud_detection_pipeline.py) | Cardholder velocity, spending z-scores, and real-time fraud alert triggers. |
 | **L2 Orderbook Depth** | [`orderbook_depth_pipeline.py`](examples/orderbook_depth_pipeline.py) | High-frequency orderbook imbalance ratio, micro-price, and spread in bps. |
 | **IoT Predictive Maintenance**| [`iot_sensor_telemetry_pipeline.py`](examples/iot_sensor_telemetry_pipeline.py) | Vibration energy RMS, thermal stress gradients, and turbine health indices. |
 | **Custom Python/Rust UDF**| [`custom_udf_pipeline.py`](examples/custom_udf_pipeline.py) | Black-Scholes delta and non-linear risk UDFs evaluated via Rust bindings. |
 | **Airflow Orchestration** | [`airflow_dag.py`](examples/airflow_dag.py) | Scheduled batch feature extraction in production Apache Airflow DAGs. |
+
+---
+
+## 🐳 Local Kafka & S3 Cluster Testing (Docker Compose)
+
+Biflux includes full integration tests that run against a real local Kafka cluster orchestrated with Docker Compose:
+
+```bash
+# 1. Launch local Kafka cluster
+docker compose up -d
+
+# 2. Run integration tests validating real Kafka broker & S3 Parquet parity
+pytest integration_tests/test_docker_kafka_cluster.py -v
+
+# Or execute the automated end-to-end runner (boots cluster, runs tests, cleans up)
+./scripts/run_docker_compose_tests.sh
+```
 
 ---
 
@@ -239,6 +257,7 @@ Biflux includes built-in safety mechanisms:
 
 Comprehensive guides, tutorials, and architectural deep-dives are available on our [Documentation Site](https://franekjemiolo.github.io/biflux/):
 - [Architecture & Zero-Copy Memory Model](https://franekjemiolo.github.io/biflux/architecture/)
+- [Kafka & S3 Lakehouse Integration](https://franekjemiolo.github.io/biflux/kafka_s3_integration/)
 - [Custom Python UDFs with Rust Acceleration](https://franekjemiolo.github.io/biflux/udf/)
 - [Performance & Latency Benchmarks](https://franekjemiolo.github.io/biflux/benchmarks/)
 - [Cross-Framework Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/)

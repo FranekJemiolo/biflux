@@ -62,6 +62,7 @@ nav:
   - Overview: index.md
   - Vision & Strategy: vision.md
   - Architecture: architecture.md
+  - Kafka & S3 Integration: kafka_s3_integration.md
   - Getting Started: getting_started.md
   - Tutorials & Models: tutorials.md
   - Custom Python UDFs: udf.md

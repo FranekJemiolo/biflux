@@ -157,16 +157,31 @@ Biflux is engineered for sub-millisecond streaming and multi-million row/sec bat
 | **High-Throughput Streaming** | 50,000 rows | **0.56 ms** (P50) | **88,862,511 rows/s** |
 | **Rust Zero-Copy Arrow IPC** | 100,000 records | **6.07 ms** | **668.4 MB/s (16.5M rec/s)** |
 
-### 📊 Cross-Framework Comparison (Biflux vs. Polars, DuckDB, Pandas)
+### 📊 Multi-Scale Framework Comparison (Biflux vs. Polars, DuckDB, Pandas)
 
-| Framework | Batch 1M Records | Streaming 5K Records (P50) | Codebase Parity / Skew Risk |
-| :--- | :--- | :--- | :--- |
-| **Biflux (Unified Engine)** | **9.6 ms** (104.3M rows/s) | **0.27 ms** (18.3M rows/s) | **0.000% Skew (100% Unified Pipeline)** |
-| **Polars (Standalone)** | 8.8 ms (114.3M rows/s) | 0.27 ms (18.2M rows/s) | High Skew Risk (No streaming abstraction; manual Kafka glue) |
-| **DuckDB** | 9.9 ms (101.2M rows/s) | N/A (In-memory SQL only) | Separate SQL vs streaming codebases |
-| **Pandas** | 15.6 ms (64.2M rows/s) | 1.43 ms (3.5M rows/s) | Critical Skew Risk & heavy GC pauses |
+#### Batch Backtest Throughput Across Scales
+| Scale | Biflux (Unified) | Polars (Standalone) | DuckDB | Pandas |
+| :--- | :--- | :--- | :--- | :--- |
+| **100K rows** | **0.96 ms** (104.2M/s) | 0.91 ms (110.4M/s) | 1.35 ms (74.1M/s) | 2.52 ms (39.7M/s) |
+| **500K rows** | **4.28 ms** (116.9M/s) | 4.11 ms (121.6M/s) | 5.01 ms (99.8M/s) | 7.76 ms (64.5M/s) |
+| **1M rows** | **9.56 ms** (104.6M/s) | 8.90 ms (112.4M/s) | 9.81 ms (101.9M/s) | 14.70 ms (68.0M/s) |
 
-*Run comparative benchmarks with `python benchmarks/comparative_benchmark.py`. Read the in-depth [Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/).*
+#### Streaming Micro-Batch Latency (P50) Across Scales
+| Micro-Batch Size | Biflux (Streaming) | Polars (Micro-Batch) | DuckDB (Micro-Batch) | Native Python | Pandas |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **500 rows** | **0.18 ms** (2.7M/s) | 0.19 ms (2.6M/s) | 0.58 ms (0.86M/s) | 0.06 ms (9.1M/s) | 1.20 ms (0.42M/s) |
+| **2,000 rows** | **0.26 ms** (7.6M/s) | 0.25 ms (8.0M/s) | 0.57 ms (3.5M/s) | 0.22 ms (9.1M/s) | 1.23 ms (1.6M/s) |
+| **10,000 rows** | **0.30 ms** (33.5M/s) | 0.30 ms (33.1M/s) | 0.63 ms (15.8M/s) | 1.08 ms (9.3M/s) | 1.39 ms (7.2M/s) |
+| **50,000 rows** | **0.62 ms** (80.6M/s) | 0.58 ms (85.7M/s) | 1.17 ms (42.8M/s) | 5.50 ms (9.1M/s) | 1.78 ms (28.1M/s) |
+
+#### Batch vs. Streaming on Identical Sample Sizes
+| Sample Size | Biflux (Batch) | Biflux (Streaming) | Polars (Standalone) | DuckDB | Pandas |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **1,000 rows** | **0.22 ms** | **0.18 ms** | 0.16 ms | 0.45 ms | 1.14 ms |
+| **10,000 rows** | **0.28 ms** | **0.29 ms** | 0.34 ms | 0.55 ms | 1.22 ms |
+| **100,000 rows**| **0.88 ms** | **0.83 ms** | 0.79 ms | 1.30 ms | 2.36 ms |
+
+*Run benchmarks with `python benchmarks/comparative_benchmark.py`. Read the in-depth [Comparative Analysis](https://franekjemiolo.github.io/biflux/comparative_analysis/).*
 
 ---
 

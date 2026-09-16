@@ -59,16 +59,16 @@ jobs:
           uv pip install -e ".[dev]"
 
       - name: Ruff Format Check
-        run: uv run ruff format --check biflux tests examples
+        run: uv run ruff format --check biflux tests integration_tests examples benchmarks
 
       - name: Ruff Linter
-        run: uv run ruff check biflux tests examples
+        run: uv run ruff check biflux tests integration_tests examples benchmarks
 
       - name: Mypy Type Check
-        run: uv run mypy biflux
+        run: uv run mypy biflux tests integration_tests examples benchmarks
 
       - name: Run PyTest with Coverage
-        run: uv run pytest tests/ --cov=biflux --cov-report=xml --cov-report=term
+        run: uv run pytest tests/ integration_tests/ --cov=biflux --cov-report=xml --cov-report=term
 
   build-wheels:
     name: Build Wheels (${{ matrix.os }})

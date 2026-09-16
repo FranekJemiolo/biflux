@@ -1,0 +1,34 @@
+repos:
+  - repo: local
+    hooks:
+      - id: ruff-format
+        name: ruff format check
+        entry: .venv/bin/ruff format --check biflux tests integration_tests examples benchmarks
+        language: system
+        pass_filenames: false
+
+      - id: ruff-lint
+        name: ruff lint check
+        entry: .venv/bin/ruff check biflux tests integration_tests examples benchmarks
+        language: system
+        pass_filenames: false
+
+      - id: mypy-check
+        name: mypy type check
+        entry: .venv/bin/mypy biflux tests integration_tests examples benchmarks
+        language: system
+        pass_filenames: false
+
+      - id: cargo-fmt
+        name: cargo fmt check
+        entry: cargo fmt --manifest-path biflux-core/Cargo.toml --all -- --check
+        language: system
+        types: [rust]
+        pass_filenames: false
+
+      - id: cargo-clippy
+        name: cargo clippy
+        entry: cargo clippy --manifest-path biflux-core/Cargo.toml --all-targets -- -D warnings
+        language: system
+        types: [rust]
+        pass_filenames: false

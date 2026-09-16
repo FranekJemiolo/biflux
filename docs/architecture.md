@@ -1,77 +1,177 @@
-# Biflux Architecture & Zero-Copy Memory Model
+# Biflux System Architecture & Technical Design
 
-Biflux is engineered to provide sub-millisecond streaming throughput alongside high-throughput batch analytics by leveraging a unified Apache Arrow memory model.
+Project Biflux is engineered as a unified, dual-runtime execution engine that bridges offline analytical lakehouses with real-time streaming buses through a single Apache Arrow compilation graph.
 
 ---
 
-## 1. Zero-Copy In-Memory Pipeline
+## 🏛️ System Overview & Component Topology
+
+```mermaid
+graph TD
+    subgraph Python API Layer ["1. Developer Interface (Python API)"]
+        UserClass["User Pipeline: class MyModel(BifluxPipeline)"]
+        TransformFn["transform(df: pl.LazyFrame) -> pl.LazyFrame"]
+        CtxInject["BifluxContext(mode, env, catalog, kafka_brokers)"]
+        Guardrails["Cloud Guardrails (Credential Validator)"]
+
+        UserClass --> TransformFn
+        UserClass --> CtxInject
+        CtxInject --> Guardrails
+    end
+
+    subgraph Compiler Layer ["2. Plan Compilation & Serialization"]
+        LogicalPlan["Polars Logical Plan IR"]
+        PlanSer["Plan Serializer (Protobuf / Arrow Schema / DSL)"]
+        Guardrails -- Validated --> LogicalPlan
+        TransformFn --> LogicalPlan
+        LogicalPlan --> PlanSer
+    end
+
+    subgraph FFI Boundary ["3. PyO3 Native FFI Bridge"]
+        RustBridge["biflux-core (Rust cdylib)"]
+        BatchFFI["biflux_core.batch_execute()"]
+        StreamFFI["biflux_core.stream_execute()"]
+        IpcFFI["biflux_core.execute_arrow_ipc()"]
+
+        PlanSer --> RustBridge
+        RustBridge --> BatchFFI
+        RustBridge --> StreamFFI
+        RustBridge --> IpcFFI
+    end
+
+    subgraph Execution Engines ["4. Dual-Runtime Execution Engines"]
+        subgraph Batch Path ["Batch Engine Path (S3 / Iceberg)"]
+            IcebergCatalog["Iceberg / Glue / Nessie Catalog"]
+            PartitionPruner["File Manifest Partition Pruning"]
+            ParquetScanner["Parallel Parquet / S3 Arrow Scanner"]
+            BatchExec["Arrow Execution Plan"]
+            S3Sink["S3 / MinIO Parquet Sink"]
+
+            BatchFFI --> IcebergCatalog
+            IcebergCatalog --> PartitionPruner
+            PartitionPruner --> ParquetScanner
+            ParquetScanner --> BatchExec
+            BatchExec --> S3Sink
+        end
+
+        subgraph Streaming Path ["Stream Engine Path (Kafka / Redpanda)"]
+            KafkaConsumer["rdkafka High-Throughput Consumer"]
+            ArrowBuffer["Zero-Copy Arrow IPC Micro-Batch Buffer"]
+            StreamExec["Arrow Execution Plan (Identical IR)"]
+            KafkaProducer["rdkafka Sink Producer"]
+
+            StreamFFI --> KafkaConsumer
+            KafkaConsumer --> ArrowBuffer
+            ArrowBuffer --> StreamExec
+            StreamExec --> KafkaProducer
+        end
+    end
+
+    style UserClass fill:#1e40af,stroke:#3b82f6,color:#fff
+    style LogicalPlan fill:#047857,stroke:#10b981,color:#fff
+    style RustBridge fill:#b45309,stroke:#f59e0b,color:#fff
+    style BatchExec fill:#4338ca,stroke:#6366f1,color:#fff
+    style StreamExec fill:#4338ca,stroke:#6366f1,color:#fff
+```
+
+---
+
+## ⚡ Zero-Copy Arrow Memory Model
+
+In conventional architectures, real-time message streams undergo severe serialization penalties:
 
 ```
-  +---------------------------------------------------------+
-  |              Kafka / Redpanda Broker                    |
-  +---------------------------------------------------------+
-                              |
-                              v (Kafka TCP Stream)
-  +---------------------------------------------------------+
-  |    rdkafka Consumer (Native Rust Crate)                 |
-  |    Direct message deserialization into Arrow IPC buffer |
-  +---------------------------------------------------------+
-                              |
-                              v (Zero-copy pointer handoff)
-  +---------------------------------------------------------+
-  |    Arrow RecordBatch / ChunkedArray In-Memory           |
-  +---------------------------------------------------------+
-                              |
-                              v (Zero-copy Arrow Table wrapper)
-  +---------------------------------------------------------+
-  |    Polars Engine: Executes compiled LogicalPlan         |
-  +---------------------------------------------------------+
-                              |
-                              v (Zero-copy Arrow IPC writer)
-  +---------------------------------------------------------+
-  |    rdkafka Producer / S3 Parquet Sink                   |
-  +---------------------------------------------------------+
+[Kafka TCP Stream]
+       │
+       ▼ (Wire deserialization)
+[JSON / Avro Strings]
+       │
+       ▼ (Python heap allocation)
+[Python Dicts & Objects]
+       │
+       ▼ (DataFrame creation & copy)
+[Pandas / Arrow Table]
+       │
+       ▼ (Feature computation)
+[Output DataFrame]
+       │
+       ▼ (JSON serialization)
+[Kafka Producer Socket]
 ```
 
-### Why Zero-Copy Matters
+### The Biflux In-Memory Pathway
 
-Traditional architectures convert streaming messages between formats multiple times:
-1. `Kafka Wire Bytes -> JSON / Avro String`
-2. `JSON String -> Python Dict / Object`
-3. `Python Dict -> PyArrow / Pandas DataFrame`
-4. `Transformations`
-5. `Pandas DataFrame -> JSON String`
-6. `JSON String -> Kafka Producer Buffer`
+Biflux eliminates intermediate string and dictionary allocations by operating directly on **pre-allocated Apache Arrow `RecordBatch` buffers**:
 
-This serialization churn consumes up to 80% of CPU time and creates significant garbage collection pauses.
+```mermaid
+sequenceDiagram
+    autonumber
+    participant K as Apache Kafka / Network
+    participant R as rdkafka (Rust Crate)
+    participant A as Arrow IPC Buffer
+    participant P as Polars / Arrow Execution Plan
+    participant S as Sink Broker / S3
 
-Biflux bypasses this entirely:
-- Raw messages are parsed directly into pre-allocated **Apache Arrow RecordBatches**.
-- Polars' underlying engine (`polars-core`) uses Arrow arrays natively under the hood. Converting an Arrow `RecordBatch` into a Polars `DataFrame` is an $O(1)$ pointer transfer.
-- The user's compiled `LogicalPlan` executes directly on the memory buffers.
-- The output Arrow array is handed to the Kafka producer without deep cloning.
+    K->>R: Raw Wire TCP Stream
+    Note over R,A: Zero-copy pointer wrapping into Arrow RecordBatch
+    R->>A: Append to contiguous ChunkedArray
+    A->>P: Pass Arrow pointer table (O(1) memory transfer)
+    Note over P: Executes compiled LogicalPlan expressions in parallel SIMD
+    P->>A: Result RecordBatch
+    A->>S: Transmit Arrow IPC bytes / JSON messages
+```
 
----
+### Memory Safety & Rust Invariants
 
-## 2. Plan Compilation & Dispatch
-
-1. **Authoring (Python)**:
-   The developer defines a subclass of `BifluxPipeline` and overrides `transform(self, df: pl.LazyFrame) -> pl.LazyFrame`.
-2. **Serialization**:
-   Biflux extracts and serializes the logical execution graph.
-3. **Execution Routing**:
-   The `BifluxContext` inspects the execution target:
-   - If `mode == "batch"`: Resolves physical Parquet/Iceberg file partitions, passes the logical plan to `biflux-core`, reads into Arrow, applies the plan, and writes Parquet to S3.
-   - If `mode == "live"`: Establishes a Kafka consumer, consumes micro-batches into Arrow record batches, applies the identical logical plan, and produces to Kafka.
+1. **Foreign Function Interface (PyO3)**: Memory blocks allocated in Rust are tracked by `Arc<arrow::array::RecordBatch>`. Python accesses the memory through Arrow PyCapsule / IPC streams without duplicating underlying memory arrays.
+2. **SIMD Vectorization**: Numerical computations (`mid = (bid + ask) / 2.0`, `vwap = sum(dollar_vol) / sum(vol)`) compile directly to AVX-512 / ARM Neon vector instructions.
+3. **Partition Pruning**: In batch mode, Iceberg manifest files are scanned in Rust to eliminate non-matching partitions before reading Parquet byte ranges from S3.
 
 ---
 
-## 3. Mathematical Equivalence Guarantees
+## 🔀 Batch vs. Stream Execution Routing
 
-Because both batch and streaming engines evaluate the exact same Polars/Arrow computation graph, edge cases such as:
-- Division-by-zero handling
-- Floating-point summation order
-- Null propagation semantics
-- String canonicalization
+```mermaid
+flowchart TD
+    Start["User invokes pipeline.run(source_uri, sink_uri)"]
+    CheckCreds{"env == Environment.CLOUD?"}
+    CredGuard["Validate AWS/GCP Credentials & Safety Prompts"]
+    Compile["Compile Polars LazyFrame Plan IR"]
+    CheckMode{"context.mode"}
 
-execute with identical bit-for-bit behavior across historical backtests and production serving.
+    Start --> CheckCreds
+    CheckCreds -- Yes --> CredGuard
+    CheckCreds -- No --> Compile
+    CredGuard -- Validated --> Compile
+
+    Compile --> CheckMode
+
+    CheckMode -- "mode == 'batch'" --> BatchRoute["Route to _execute_batch()"]
+    CheckMode -- "mode == 'live'" --> StreamRoute["Route to _execute_stream()"]
+
+    subgraph Batch Flow
+        BatchRoute --> ResolveFiles["Resolve Iceberg / Parquet URI partitions"]
+        ResolveFiles --> ScanParquet["Parallel Parquet Read into Arrow"]
+        ScanParquet --> ExecBatch["Execute Logical Graph on Full Partitions"]
+        ExecBatch --> WriteParquet["Write Result Parquet to Sink S3"]
+    end
+
+    subgraph Stream Flow
+        StreamRoute --> InitKafka["Initialize rdkafka Consumer & Producer"]
+        InitKafka --> MicroBatch["Accumulate Arrow Micro-Batches"]
+        MicroBatch --> ExecStream["Execute Identical Logical Graph on Batches"]
+        ExecStream --> EmitKafka["Emit Transformed Batches to Sink Topic"]
+    end
+
+    WriteParquet --> Summary["Return ExecutionResult(status, duration_ms, rows)"]
+    EmitKafka --> Summary
+```
+
+---
+
+## 🛡️ Cloud Guardrail Architecture
+
+To protect engineering organizations against catastrophic AWS/GCP cost overruns during local testing or CI runs, Biflux implements a two-tier gate:
+
+1. **Environment Separation**: `Environment.LOCAL` (default) explicitly targets `localhost` MinIO and Redpanda endpoints, bypassing cloud credential checks.
+2. **Cloud Gating**: `Environment.CLOUD` strictly checks for active credentials (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, or `GOOGLE_APPLICATION_CREDENTIALS`). If missing in an interactive session, it prompts the developer with explicit cost warnings; in automated non-interactive runs, it halts immediately with `BifluxCredentialError`.

@@ -46,7 +46,9 @@ markdown_extensions:
 
 nav:
   - Overview: index.md
+  - Vision & Strategy: vision.md
   - Architecture: architecture.md
   - Getting Started: getting_started.md
-  - Bond Pricing Model: tutorials.md
+  - Tutorials & Models: tutorials.md
   - Benchmarks: benchmarks.md
+  - Comparative Analysis: comparative_analysis.md

@@ -65,10 +65,10 @@ graph TD
 
 ## 📦 Installation
 
-Install the pre-compiled wheel via pip:
+Install directly from GitHub via pip:
 
 ```bash
-pip install biflux
+pip install "git+https://github.com/FranekJemiolo/biflux.git"
 ```
 
 Or build locally from source (requires Rust toolchain):

@@ -6,9 +6,9 @@ This guide walks you through installing Biflux, understanding its core abstracti
 
 ## 📦 1. Installation
 
-### From PyPI
+### Install from GitHub
 ```bash
-pip install biflux
+pip install "git+https://github.com/FranekJemiolo/biflux.git"
 ```
 
 ### From Source (Local Development)

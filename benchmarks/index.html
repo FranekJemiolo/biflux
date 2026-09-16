@@ -1,0 +1,1544 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified data engineering framework eliminating Train-Serve Skew">
+      
+      
+        <meta name="author" content="Franek Jemiolo">
+      
+      
+        <link rel="canonical" href="https://franekjemiolo.github.io/biflux/benchmarks/">
+      
+      
+        <link rel="prev" href="../udf/">
+      
+      
+        <link rel="next" href="../comparative_analysis/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Benchmarks - Biflux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#performance-latency-benchmarks" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Biflux" class="md-header__button md-logo" aria-label="Biflux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Biflux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Benchmarks
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FranekJemiolo/biflux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FranekJemiolo/biflux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../vision/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Vision & Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../kafka_s3_integration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Kafka & S3 Integration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting_started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tutorials/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorials & Models
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../udf/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Custom Python UDFs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Benchmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../comparative_analysis/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Comparative Analysis
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Biflux" class="md-nav__button md-logo" aria-label="Biflux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Biflux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FranekJemiolo/biflux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FranekJemiolo/biflux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../vision/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision & Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kafka_s3_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & S3 Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials & Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../udf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Python UDFs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Benchmark Highlights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-framework-multi-scale-comparison-biflux-vs-polars-duckdb-pandas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Cross-Framework Multi-Scale Comparison (Biflux vs. Polars, DuckDB, Pandas)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Cross-Framework Multi-Scale Comparison (Biflux vs. Polars, DuckDB, Pandas)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-batch-backtest-scaling-across-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Batch Backtest Scaling Across Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-streaming-micro-batch-latency-p50-across-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Streaming Micro-Batch Latency (P50) Across Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-batch-vs-streaming-on-identical-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Batch vs. Streaming on Identical Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-historical-batch-engine-throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Historical Batch Engine Throughput
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-real-time-streaming-micro-batch-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Real-Time Streaming Micro-Batch Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-rust-zero-copy-arrow-ipc-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Rust Zero-Copy Arrow IPC Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-all-domain-pipeline-examples-empirical-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. All Domain Pipeline Examples Empirical Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-custom-python-udf-acceleration-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Custom Python UDF Acceleration Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Custom Python UDF Acceleration Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch-mode-udf-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch Mode UDF Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-micro-batch-udf-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Micro-Batch UDF Latency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducing-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproducing Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative_analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#benchmark-highlights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Benchmark Highlights
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cross-framework-multi-scale-comparison-biflux-vs-polars-duckdb-pandas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Cross-Framework Multi-Scale Comparison (Biflux vs. Polars, DuckDB, Pandas)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Cross-Framework Multi-Scale Comparison (Biflux vs. Polars, DuckDB, Pandas)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-batch-backtest-scaling-across-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Batch Backtest Scaling Across Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-streaming-micro-batch-latency-p50-across-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Streaming Micro-Batch Latency (P50) Across Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-batch-vs-streaming-on-identical-sample-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Batch vs. Streaming on Identical Sample Sizes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-historical-batch-engine-throughput" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Historical Batch Engine Throughput
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-real-time-streaming-micro-batch-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Real-Time Streaming Micro-Batch Latency
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-rust-zero-copy-arrow-ipc-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Rust Zero-Copy Arrow IPC Engine
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-all-domain-pipeline-examples-empirical-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. All Domain Pipeline Examples Empirical Benchmark
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-custom-python-udf-acceleration-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Custom Python UDF Acceleration Engine
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Custom Python UDF Acceleration Engine">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#batch-mode-udf-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Batch Mode UDF Scaling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#streaming-micro-batch-udf-latency" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Streaming Micro-Batch UDF Latency
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reproducing-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reproducing Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="performance-latency-benchmarks">Performance &amp; Latency Benchmarks</h1>
+<p>Biflux is engineered for low latency and high analytical throughput by compiling Python Polars logical plans into a unified Apache Arrow in-memory engine.</p>
+<hr />
+<h2 id="benchmark-highlights">🚀 Benchmark Highlights</h2>
+<ul>
+<li><strong>Peak Batch Throughput</strong>: <strong>4,129,685 rows/sec</strong> (1,000,000 rows scanned, aggregated, and written to Parquet in 242 ms).</li>
+<li><strong>Sub-Millisecond Streaming Latency</strong>: <strong>0.24 ms</strong> P50 latency on 100-row micro-batches; <strong>0.25 ms</strong> on 1,000-row micro-batches.</li>
+<li><strong>Peak Streaming Micro-batch Throughput</strong>: Up to <strong>88,862,511 rows/sec</strong>.</li>
+<li><strong>Rust Arrow IPC Memory Transfer Bandwidth</strong>: <strong>668.4 MB/s</strong> (16,487,434 records/sec zero-copy in-memory roundtrip).</li>
+</ul>
+<hr />
+<h2 id="cross-framework-multi-scale-comparison-biflux-vs-polars-duckdb-pandas">📊 Cross-Framework Multi-Scale Comparison (Biflux vs. Polars, DuckDB, Pandas)</h2>
+<h3 id="1-batch-backtest-scaling-across-sample-sizes">1. Batch Backtest Scaling Across Sample Sizes</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scale</th>
+<th style="text-align: left;">Biflux (Unified)</th>
+<th style="text-align: left;">Polars (Standalone)</th>
+<th style="text-align: left;">DuckDB</th>
+<th style="text-align: left;">Pandas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>100K rows</strong></td>
+<td style="text-align: left;"><strong>0.96 ms</strong> (104.2M/s)</td>
+<td style="text-align: left;">0.91 ms (110.4M/s)</td>
+<td style="text-align: left;">1.35 ms (74.1M/s)</td>
+<td style="text-align: left;">2.52 ms (39.7M/s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>500K rows</strong></td>
+<td style="text-align: left;"><strong>4.28 ms</strong> (116.9M/s)</td>
+<td style="text-align: left;">4.11 ms (121.6M/s)</td>
+<td style="text-align: left;">5.01 ms (99.8M/s)</td>
+<td style="text-align: left;">7.76 ms (64.5M/s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>1M rows</strong></td>
+<td style="text-align: left;"><strong>9.56 ms</strong> (104.6M/s)</td>
+<td style="text-align: left;">8.90 ms (112.4M/s)</td>
+<td style="text-align: left;">9.81 ms (101.9M/s)</td>
+<td style="text-align: left;">14.70 ms (68.0M/s)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="2-streaming-micro-batch-latency-p50-across-sample-sizes">2. Streaming Micro-Batch Latency (P50) Across Sample Sizes</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Micro-Batch Size</th>
+<th style="text-align: left;">Biflux (Streaming)</th>
+<th style="text-align: left;">Polars (Micro-Batch)</th>
+<th style="text-align: left;">DuckDB (Micro-Batch)</th>
+<th style="text-align: left;">Native Python</th>
+<th style="text-align: left;">Pandas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>500 rows</strong></td>
+<td style="text-align: left;"><strong>0.18 ms</strong> (2.7M/s)</td>
+<td style="text-align: left;">0.19 ms (2.6M/s)</td>
+<td style="text-align: left;">0.58 ms (0.86M/s)</td>
+<td style="text-align: left;">0.06 ms (9.1M/s)</td>
+<td style="text-align: left;">1.20 ms (0.42M/s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.26 ms</strong> (7.6M/s)</td>
+<td style="text-align: left;">0.25 ms (8.0M/s)</td>
+<td style="text-align: left;">0.57 ms (3.5M/s)</td>
+<td style="text-align: left;">0.22 ms (9.1M/s)</td>
+<td style="text-align: left;">1.23 ms (1.6M/s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>10,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.30 ms</strong> (33.5M/s)</td>
+<td style="text-align: left;">0.30 ms (33.1M/s)</td>
+<td style="text-align: left;">0.63 ms (15.8M/s)</td>
+<td style="text-align: left;">1.08 ms (9.3M/s)</td>
+<td style="text-align: left;">1.39 ms (7.2M/s)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>50,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.62 ms</strong> (80.6M/s)</td>
+<td style="text-align: left;">0.58 ms (85.7M/s)</td>
+<td style="text-align: left;">1.17 ms (42.8M/s)</td>
+<td style="text-align: left;">5.50 ms (9.1M/s)</td>
+<td style="text-align: left;">1.78 ms (28.1M/s)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-batch-vs-streaming-on-identical-sample-sizes">3. Batch vs. Streaming on Identical Sample Sizes</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Sample Size</th>
+<th style="text-align: left;">Biflux (Batch)</th>
+<th style="text-align: left;">Biflux (Streaming)</th>
+<th style="text-align: left;">Polars (Standalone)</th>
+<th style="text-align: left;">DuckDB</th>
+<th style="text-align: left;">Pandas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>1,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.22 ms</strong></td>
+<td style="text-align: left;"><strong>0.18 ms</strong></td>
+<td style="text-align: left;">0.16 ms</td>
+<td style="text-align: left;">0.45 ms</td>
+<td style="text-align: left;">1.14 ms</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>10,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.28 ms</strong></td>
+<td style="text-align: left;"><strong>0.29 ms</strong></td>
+<td style="text-align: left;">0.34 ms</td>
+<td style="text-align: left;">0.55 ms</td>
+<td style="text-align: left;">1.22 ms</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>100,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.88 ms</strong></td>
+<td style="text-align: left;"><strong>0.83 ms</strong></td>
+<td style="text-align: left;">0.79 ms</td>
+<td style="text-align: left;">1.30 ms</td>
+<td style="text-align: left;">2.36 ms</td>
+</tr>
+</tbody>
+</table>
+<p><em>For complete comparative methodology and train-serve skew elimination analysis, see <a href="../comparative_analysis/">Comparative Analysis</a>.</em></p>
+<hr />
+<h2 id="1-historical-batch-engine-throughput">1. Historical Batch Engine Throughput</h2>
+<p>Evaluated on VWAP aggregation over synthetic bond quote tables in Apache Parquet format:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Scale (Records)</th>
+<th style="text-align: left;">Dataset Size</th>
+<th style="text-align: left;">Execution Time</th>
+<th style="text-align: left;">Processing Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>100,000 rows</strong></td>
+<td style="text-align: left;">0.1 MB</td>
+<td style="text-align: left;"><strong>24.5 ms</strong></td>
+<td style="text-align: left;"><strong>4,075,519 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>500,000 rows</strong></td>
+<td style="text-align: left;">0.5 MB</td>
+<td style="text-align: left;"><strong>132.1 ms</strong></td>
+<td style="text-align: left;"><strong>3,786,130 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>1,000,000 rows</strong></td>
+<td style="text-align: left;">1.1 MB</td>
+<td style="text-align: left;"><strong>242.1 ms</strong></td>
+<td style="text-align: left;"><strong>4,129,685 rows/s</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-real-time-streaming-micro-batch-latency">2. Real-Time Streaming Micro-Batch Latency</h2>
+<p>Evaluated over 20 iterations per batch size using native in-memory Apache Arrow record batches:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Micro-Batch Size</th>
+<th style="text-align: left;">P50 Latency</th>
+<th style="text-align: left;">P90 Latency</th>
+<th style="text-align: left;">P99 Latency</th>
+<th style="text-align: left;">Effective Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>100 rows</strong></td>
+<td style="text-align: left;"><strong>0.24 ms</strong></td>
+<td style="text-align: left;">0.41 ms</td>
+<td style="text-align: left;">0.44 ms</td>
+<td style="text-align: left;">408,510 rows/s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>500 rows</strong></td>
+<td style="text-align: left;"><strong>0.25 ms</strong></td>
+<td style="text-align: left;">0.29 ms</td>
+<td style="text-align: left;">0.32 ms</td>
+<td style="text-align: left;">1,979,876 rows/s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>1,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.25 ms</strong></td>
+<td style="text-align: left;">0.32 ms</td>
+<td style="text-align: left;">0.34 ms</td>
+<td style="text-align: left;">4,022,801 rows/s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>5,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.31 ms</strong></td>
+<td style="text-align: left;">0.35 ms</td>
+<td style="text-align: left;">0.44 ms</td>
+<td style="text-align: left;">16,382,270 rows/s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>10,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.31 ms</strong></td>
+<td style="text-align: left;">0.38 ms</td>
+<td style="text-align: left;">0.39 ms</td>
+<td style="text-align: left;">32,318,952 rows/s</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>50,000 rows</strong></td>
+<td style="text-align: left;"><strong>0.56 ms</strong></td>
+<td style="text-align: left;">0.68 ms</td>
+<td style="text-align: left;">0.98 ms</td>
+<td style="text-align: left;">88,862,511 rows/s</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-rust-zero-copy-arrow-ipc-engine">3. Rust Zero-Copy Arrow IPC Engine</h2>
+<p>Direct memory evaluation between the Python API and <code>biflux-core</code> Rust engine via PyO3:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Metric</th>
+<th style="text-align: left;">Result</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Record Batch Size</strong></td>
+<td style="text-align: left;">100,000 records</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>In-Memory Buffer Size</strong></td>
+<td style="text-align: left;">4.05 MB</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>FFI Roundtrip Duration</strong></td>
+<td style="text-align: left;"><strong>6.07 ms</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Arrow Memory Bandwidth</strong></td>
+<td style="text-align: left;"><strong>668.4 MB/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>FFI Record Ingestion Rate</strong></td>
+<td style="text-align: left;"><strong>16,487,434 records/s</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-all-domain-pipeline-examples-empirical-benchmark">4. All Domain Pipeline Examples Empirical Benchmark</h2>
+<p>Evaluating all production domain pipelines across batch and live streaming modes (from <code>benchmarks/benchmark_all_examples.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Pipeline Example</th>
+<th style="text-align: left;">Domain Application</th>
+<th style="text-align: left;">Batch Latency (50K)</th>
+<th style="text-align: left;">Batch Throughput</th>
+<th style="text-align: left;">Streaming P50 (1K)</th>
+<th style="text-align: left;">Streaming Throughput</th>
+<th style="text-align: left;">Max Train-Serve Skew</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Bond Pricing VWAP</strong></td>
+<td style="text-align: left;">Fixed Income Analytics</td>
+<td style="text-align: left;"><strong>0.67 ms</strong></td>
+<td style="text-align: left;"><strong>74.7M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.26 ms</strong></td>
+<td style="text-align: left;"><strong>3.9M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.000000% (Exact Parity)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Fraud Risk Scoring</strong></td>
+<td style="text-align: left;">Payment Fraud Systems</td>
+<td style="text-align: left;"><strong>1.38 ms</strong></td>
+<td style="text-align: left;"><strong>36.1M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.41 ms</strong></td>
+<td style="text-align: left;"><strong>2.4M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.000000% (Exact Parity)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>L2 Orderbook Depth</strong></td>
+<td style="text-align: left;">HFT Microstructure</td>
+<td style="text-align: left;"><strong>0.77 ms</strong></td>
+<td style="text-align: left;"><strong>64.6M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.30 ms</strong></td>
+<td style="text-align: left;"><strong>3.3M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.000000% (Exact Parity)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>IoT Predictive Health</strong></td>
+<td style="text-align: left;">Industrial Turbines</td>
+<td style="text-align: left;"><strong>1.00 ms</strong></td>
+<td style="text-align: left;"><strong>49.8M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.38 ms</strong></td>
+<td style="text-align: left;"><strong>2.7M rows/s</strong></td>
+<td style="text-align: left;"><strong>0.000000% (Exact Parity)</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Option Risk (Rust UDF)</strong></td>
+<td style="text-align: left;">Options Pricing &amp; Greeks</td>
+<td style="text-align: left;"><strong>71.54 ms</strong></td>
+<td style="text-align: left;"><strong>698.9K rows/s</strong></td>
+<td style="text-align: left;"><strong>1.71 ms</strong></td>
+<td style="text-align: left;"><strong>585.2K rows/s</strong></td>
+<td style="text-align: left;"><strong>0.000000% (Exact Parity)</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-custom-python-udf-acceleration-engine">5. Custom Python UDF Acceleration Engine</h2>
+<p>Evaluating custom Python mathematical functions executed via Rust/PyO3 bindings (from <code>benchmarks/benchmark_udf.py</code>):</p>
+<h3 id="batch-mode-udf-scaling">Batch Mode UDF Scaling</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dataset Scale</th>
+<th style="text-align: left;">Execution Time (ms)</th>
+<th style="text-align: left;">Processing Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>10,000 records</strong></td>
+<td style="text-align: left;"><strong>5.29 ms</strong></td>
+<td style="text-align: left;"><strong>1,890,166 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>100,000 records</strong></td>
+<td style="text-align: left;"><strong>49.58 ms</strong></td>
+<td style="text-align: left;"><strong>2,016,836 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>500,000 records</strong></td>
+<td style="text-align: left;"><strong>251.33 ms</strong></td>
+<td style="text-align: left;"><strong>1,989,432 rows/s</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="streaming-micro-batch-udf-latency">Streaming Micro-Batch UDF Latency</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Micro-Batch Size</th>
+<th style="text-align: left;">P50 Latency (ms)</th>
+<th style="text-align: left;">Streaming Throughput</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>500 records</strong></td>
+<td style="text-align: left;"><strong>0.54 ms</strong></td>
+<td style="text-align: left;"><strong>934,071 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>2,000 records</strong></td>
+<td style="text-align: left;"><strong>1.49 ms</strong></td>
+<td style="text-align: left;"><strong>1,342,057 rows/s</strong></td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>10,000 records</strong></td>
+<td style="text-align: left;"><strong>5.43 ms</strong></td>
+<td style="text-align: left;"><strong>1,842,610 rows/s</strong></td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong>Direct PyO3 Rust UDF Vector Latency</strong>: <strong>46.84 ms</strong> for 100,000 records (<strong>2,134,967 rows/s</strong>).</li>
+</ul>
+<hr />
+<h2 id="reproducing-benchmarks">Reproducing Benchmarks</h2>
+<p>Run the benchmark suites locally:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Internal throughput and Arrow IPC</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>python<span class="w"> </span>benchmarks/benchmark_throughput.py
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Multi-scale cross-framework comparison (Biflux vs Polars, DuckDB, Pandas)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>python<span class="w"> </span>benchmarks/comparative_benchmark.py
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># All domain pipeline examples</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>python<span class="w"> </span>benchmarks/benchmark_all_examples.py
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
+<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Custom Python UDF acceleration engine</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>python<span class="w"> </span>benchmarks/benchmark_udf.py
+</code></pre></div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1280 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Unified data engineering framework eliminating Train-Serve Skew">
+      
+      
+        <meta name="author" content="Franek Jemiolo">
+      
+      
+        <link rel="canonical" href="https://franekjemiolo.github.io/biflux/vision/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Vision & Strategy - Biflux</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#project-biflux-vision-design-document" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Biflux" class="md-header__button md-logo" aria-label="Biflux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Biflux
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Vision & Strategy
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/FranekJemiolo/biflux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FranekJemiolo/biflux
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Overview
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Vision & Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../kafka_s3_integration/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Kafka & S3 Integration
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting_started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../tutorials/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tutorials & Models
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../udf/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Custom Python UDFs
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../benchmarks/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Benchmarks
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../comparative_analysis/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Comparative Analysis
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Biflux" class="md-nav__button md-logo" aria-label="Biflux" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Biflux
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/FranekJemiolo/biflux" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    FranekJemiolo/biflux
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision & Strategy
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Vision & Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary-thesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Executive Summary &amp; Thesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-4-pillars-of-biflux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 The 4 Pillars of Biflux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 The 4 Pillars of Biflux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pillar-1-single-expression-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 1: Single Expression Graph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-2-zero-copy-rust-arrow-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 2: Zero-Copy Rust &amp; Arrow Core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-3-dual-target-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 3: Dual-Target Interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-4-built-in-enterprise-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 4: Built-in Enterprise Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 Architectural Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-year-technical-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗺️ 5-Year Technical Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗺️ 5-Year Technical Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-current-core-single-node-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 (Current): Core Single-Node Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-distributed-lakehouse-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Distributed Lakehouse Workers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-embedded-stateful-stream-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Embedded Stateful Stream Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../kafka_s3_integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Kafka & S3 Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting_started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../tutorials/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials & Models
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../udf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Custom Python UDFs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../benchmarks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmarks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../comparative_analysis/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Comparative Analysis
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary-thesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Executive Summary &amp; Thesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-4-pillars-of-biflux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 The 4 Pillars of Biflux
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 The 4 Pillars of Biflux">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pillar-1-single-expression-graph" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 1: Single Expression Graph
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-2-zero-copy-rust-arrow-core" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 2: Zero-Copy Rust &amp; Arrow Core
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-3-dual-target-interoperability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 3: Dual-Target Interoperability
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pillar-4-built-in-enterprise-guardrails" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pillar 4: Built-in Enterprise Guardrails
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architectural-comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔬 Architectural Comparison
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-year-technical-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🗺️ 5-Year Technical Roadmap
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🗺️ 5-Year Technical Roadmap">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-current-core-single-node-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1 (Current): Core Single-Node Engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-distributed-lakehouse-workers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Distributed Lakehouse Workers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-embedded-stateful-stream-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Embedded Stateful Stream Processing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="project-biflux-vision-design-document">Project Biflux: Vision &amp; Design Document</h1>
+<blockquote>
+<p><strong>The Unified Data Engineering Framework for Eliminating Train-Serve Skew</strong></p>
+</blockquote>
+<hr />
+<h2 id="executive-summary-thesis">🎯 Executive Summary &amp; Thesis</h2>
+<p>In quantitative finance, algorithmic trading, real-time fraud detection, and predictive machine learning, the single most persistent and destructive category of production failure is <strong>Train-Serve Skew</strong>:</p>
+<div class="arithmatex">\[E_{\text{production}}[f(x)] \neq E_{\text{offline}}[f(x)]\]</div>
+<p>When feature pipelines evaluated during offline model backtests/training deviate even slightly from the streaming pipelines evaluating real-time production traffic, model accuracy collapses silently.</p>
+<p>Historically, organizations were forced into a false dichotomy:
+1. <strong>The Lambda Architecture Compromise</strong>: Write analytical batch queries in PySpark, SQL, or Polars; rewrite identical logic in Java (Flink), C++, or Go for Kafka streaming. This guarantees dual maintenance, semantic divergence, and silent production drift.
+2. <strong>The Feature Store Band-Aid</strong>: Use metadata stores (Feast, Hopsworks, Tecton) to register feature definitions, while still relying on two disconnected execution engines under the hood.</p>
+<p><strong>The Biflux Thesis</strong>:</p>
+<blockquote>
+<p><em>Feature logic should be authored exactly once in a composable Python expression API (using Polars), compiled into a single immutable Apache Arrow execution graph, and executed natively across both analytical lakehouse storage (S3/Iceberg) and low-latency streaming backbones (Kafka/Redpanda) via a high-performance Rust core.</em></p>
+</blockquote>
+<hr />
+<h2 id="the-4-pillars-of-biflux">💡 The 4 Pillars of Biflux</h2>
+<pre class="mermaid"><code>flowchart TD
+    Root["🎯 Core Pillars of Biflux"]
+
+    subgraph P1 ["1. Single Expression Graph"]
+        P1A["Polars LazyFrame API"]
+        P1B["Zero Code Duplication"]
+        P1C["Bit-for-Bit Determinism"]
+    end
+
+    subgraph P2 ["2. Zero-Copy Rust Core"]
+        P2A["Native Apache Arrow IPC"]
+        P2B["O(1) Memory Handoffs"]
+        P2C["Sub-Millisecond Micro-Batches"]
+    end
+
+    subgraph P3 ["3. Lakehouse &amp; Stream Hybrid"]
+        P3A["Apache Iceberg &amp; Parquet"]
+        P3B["Apache Kafka &amp; Redpanda"]
+        P3C["Identical Plan Dispatch"]
+    end
+
+    subgraph P4 ["4. Enterprise Guardrails"]
+        P4A["Environment.LOCAL vs CLOUD"]
+        P4B["Pre-Execution Credential Gate"]
+        P4C["Airflow &amp; Prefect Ready"]
+    end
+
+    Root --&gt; P1
+    Root --&gt; P2
+    Root --&gt; P3
+    Root --&gt; P4
+
+    classDef root fill:#e0e7ff,stroke:#4338ca,stroke-width:2px,color:#312e81;
+    classDef p1 fill:#eff6ff,stroke:#3b82f6,stroke-width:2px,color:#1e40af;
+    classDef p2 fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#9a3412;
+    classDef p3 fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#166534;
+    classDef p4 fill:#faf5ff,stroke:#9333ea,stroke-width:2px,color:#6b21a8;
+
+    class Root root;
+    class P1A,P1B,P1C p1;
+    class P2A,P2B,P2C p2;
+    class P3A,P3B,P3C p3;
+    class P4A,P4B,P4C p4;</code></pre>
+<h3 id="pillar-1-single-expression-graph">Pillar 1: Single Expression Graph</h3>
+<p>Data engineers and quantitative researchers author transformations once using standard Polars syntax. There is no custom domain-specific language (DSL) to learn. The graph encapsulates column transformations, windowing, filtering, and aggregations.</p>
+<h3 id="pillar-2-zero-copy-rust-arrow-core">Pillar 2: Zero-Copy Rust &amp; Arrow Core</h3>
+<p>Under the hood, <code>biflux-core</code> is written in Rust using PyO3 and Apache Arrow. Instead of serializing data to Python objects or JSON intermediate strings, streaming records are parsed directly into pre-allocated Arrow <code>RecordBatch</code> instances, yielding sub-millisecond per-batch latency (<span class="arithmatex">\(&lt;0.3\text{ ms}\)</span>).</p>
+<h3 id="pillar-3-dual-target-interoperability">Pillar 3: Dual-Target Interoperability</h3>
+<p>The user selects <code>BifluxContext(mode="batch")</code> for multi-million-row lakehouse ETL over S3 and Apache Iceberg, or <code>BifluxContext(mode="live")</code> for real-time Kafka event stream processing. Both contexts evaluate the exact same compiled computation graph.</p>
+<h3 id="pillar-4-built-in-enterprise-guardrails">Pillar 4: Built-in Enterprise Guardrails</h3>
+<p>Accidental executions against live cloud infrastructure (AWS Glue, S3, MSK) during local testing or CI are structurally prevented by strict credential guardrails and interactive terminal prompts.</p>
+<hr />
+<h2 id="architectural-comparison">🔬 Architectural Comparison</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">Dimension</th>
+<th style="text-align: left;">Biflux</th>
+<th style="text-align: left;">Apache Flink</th>
+<th style="text-align: left;">Apache Spark</th>
+<th style="text-align: left;">Feast / Feature Stores</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>Execution Model</strong></td>
+<td style="text-align: left;">Single Rust/Arrow Graph</td>
+<td style="text-align: left;">Java/Scala JVM Streaming</td>
+<td style="text-align: left;">JVM Micro-batch</td>
+<td style="text-align: left;">Metadata Registry (Delegates I/O)</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Offline/Online Parity</strong></td>
+<td style="text-align: left;"><strong>100% Bit-for-Bit (0.0% Skew)</strong></td>
+<td style="text-align: left;">Requires PyFlink / SQL glue</td>
+<td style="text-align: left;">Dual pipeline rewrites</td>
+<td style="text-align: left;">Varies by underlying connector</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Authoring Language</strong></td>
+<td style="text-align: left;">Python (Polars API)</td>
+<td style="text-align: left;">Java / Scala / SQL</td>
+<td style="text-align: left;">Python / Scala / SQL</td>
+<td style="text-align: left;">Python / YAML specifications</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Streaming Latency</strong></td>
+<td style="text-align: left;"><strong>Sub-millisecond (0.24 ms)</strong></td>
+<td style="text-align: left;">Sub-second (10-50 ms)</td>
+<td style="text-align: left;">Seconds (100-500 ms)</td>
+<td style="text-align: left;">Delegated to external cache</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Memory Footprint</strong></td>
+<td style="text-align: left;">Native Arrow Zero-Copy</td>
+<td style="text-align: left;">JVM Garbage Collector Churn</td>
+<td style="text-align: left;">JVM Heap Churn</td>
+<td style="text-align: left;">Python/Redis memory overhead</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>Cloud Safety Guardrails</strong></td>
+<td style="text-align: left;">Built-in Local/Cloud Toggles</td>
+<td style="text-align: left;">None (External Config)</td>
+<td style="text-align: left;">None (External Config)</td>
+<td style="text-align: left;">None</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-year-technical-roadmap">🗺️ 5-Year Technical Roadmap</h2>
+<pre class="mermaid"><code>timeline
+    title Biflux Strategic Engineering Roadmap
+    2026 : Biflux 0.1 Core : Dual Batch/Stream Engine : Zero-Copy Rust FFI : Initial Quant Benchmarks
+    2027 : Distributed Biflux : Arrow Flight SQL Driver : Distributed S3 Partition Workers : Native Iceberg REST Catalog
+    2028 : Stateful Streaming : RocksDB/Arrow Embedded State Store : Complex Event Processing (CEP) : Watermarking &amp; Tumbling Windows
+    2029 : Multi-Engine Compilation : WebAssembly (Wasm) Edge Pipelines : Native GPU (Arrow-CUDA) Feature Acceleration
+    2030 : Autonomous Feature Mesh : Automated Train-Serve Skew Auditing : Self-Healing Real-Time Feature Rebalancing</code></pre>
+<h3 id="phase-1-current-core-single-node-engine">Phase 1 (Current): Core Single-Node Engine</h3>
+<ul>
+<li>Complete implementation of <code>BifluxPipeline</code>, <code>BifluxContext</code>, <code>biflux-core</code> Rust engine.</li>
+<li>Arrow IPC zero-copy memory buffers.</li>
+<li>Verified 0.000000% Train-Serve skew across bond pricing, payment fraud, and orderbook microstructure models.</li>
+</ul>
+<h3 id="phase-2-distributed-lakehouse-workers">Phase 2: Distributed Lakehouse Workers</h3>
+<ul>
+<li>Arrow Flight SQL client/server integrations.</li>
+<li>Distributed partition worker scheduling for multi-terabyte Iceberg lakehouses.</li>
+</ul>
+<h3 id="phase-3-embedded-stateful-stream-processing">Phase 3: Embedded Stateful Stream Processing</h3>
+<ul>
+<li>Embedded local state stores using RocksDB with Arrow columnar representations.</li>
+<li>Out-of-order event watermarking and sliding temporal windows.</li>
+</ul>
+<hr />
+<h2 id="conclusion">🎯 Conclusion</h2>
+<p>Biflux bridges the chasm between offline feature exploration and online low-latency serving. By unifying around Apache Arrow in Rust and Polars in Python, teams deploy mission-critical machine learning and trading models with guaranteed mathematical parity.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "content.code.copy", "content.code.annotate"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+        <script src="../javascripts/mathjax.js"></script>
+      
+        <script src="https://unpkg.com/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+    
+  </body>
+</html>
